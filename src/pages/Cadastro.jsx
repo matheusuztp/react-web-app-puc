@@ -87,7 +87,6 @@ function Cadastro() {
   const [sobrenome, setSobrenome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [mensagem, setMensagem] = useState("");
-  const [senhaEstaFocada, setSenhaEstaFocada] = useState(false);
 
   const senhaTemTamanho = senha.length >= 8;
   const senhaTemMaiuscula = /[A-Z]/.test(senha);
@@ -105,8 +104,7 @@ function Cadastro() {
   const dataValida = validarData(dataNascimento);
   const formularioValido =
     emailValido && senhaValida && dataValida && nome !== "" && sobrenome !== "";
-  const mostrarValidacoesSenha =
-    senhaEstaFocada || (senha !== "" && !senhaValida);
+  const mostrarValidacoesSenha = senha !== "" && !senhaValida;
 
   async function cadastrar(event) {
     event.preventDefault();
@@ -159,8 +157,6 @@ function Cadastro() {
             type="password"
             value={senha}
             onChange={(event) => setSenha(event.target.value)}
-            onFocus={() => setSenhaEstaFocada(true)}
-            onBlur={() => setSenhaEstaFocada(false)}
             required
           />
           {mostrarValidacoesSenha && (

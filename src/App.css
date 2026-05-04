@@ -91,5 +91,5 @@ a {
 }
 
 .invalido::before {
-  content: "\26A0 ";
+  content: "\26A0\00A0\00A0";
 }
