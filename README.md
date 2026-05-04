@@ -47,11 +47,5 @@ No Firebase, e necessario habilitar:
 
 ## Deploy no Netlify
 
-O projeto possui o arquivo `netlify.toml` configurado.
-
-Para fazer deploy:
-
-```bash
-npm run build
-npx netlify-cli deploy --prod --dir=dist
+https://react-web-app-puc.netlify.app/
 ```
