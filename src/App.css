@@ -86,18 +86,10 @@ a {
   font-size: 14px;
 }
 
-.valido {
-  color: #087f23;
-}
-
-.valido::before {
-  content: "✓ ";
-}
-
 .invalido {
   color: #b00020;
 }
 
 .invalido::before {
-  content: "⚠ ";
+  content: "\26A0 ";
 }

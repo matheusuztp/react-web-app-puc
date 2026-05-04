@@ -87,6 +87,7 @@ function Cadastro() {
   const [sobrenome, setSobrenome] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [mensagem, setMensagem] = useState("");
+  const [senhaEstaFocada, setSenhaEstaFocada] = useState(false);
 
   const senhaTemTamanho = senha.length >= 8;
   const senhaTemMaiuscula = /[A-Z]/.test(senha);
@@ -104,6 +105,8 @@ function Cadastro() {
   const dataValida = validarData(dataNascimento);
   const formularioValido =
     emailValido && senhaValida && dataValida && nome !== "" && sobrenome !== "";
+  const mostrarValidacoesSenha =
+    senhaEstaFocada || (senha !== "" && !senhaValida);
 
   async function cadastrar(event) {
     event.preventDefault();
@@ -145,9 +148,9 @@ function Cadastro() {
             onChange={(event) => setEmail(event.target.value)}
             required
           />
-          {email !== "" && (
-            <p className={emailValido ? "validacao valido" : "validacao invalido"}>
-              {emailValido ? "E-mail valido." : "Digite um e-mail valido."}
+          {email !== "" && !emailValido && (
+            <p className="validacao invalido">
+              Digite um e-mail valido.
             </p>
           )}
 
@@ -156,27 +159,35 @@ function Cadastro() {
             type="password"
             value={senha}
             onChange={(event) => setSenha(event.target.value)}
+            onFocus={() => setSenhaEstaFocada(true)}
+            onBlur={() => setSenhaEstaFocada(false)}
             required
           />
-          <div className="validacoes">
-            <p className={senhaTemTamanho ? "validacao valido" : "validacao invalido"}>
-              Minimo de 8 caracteres
-            </p>
-            <p className={senhaTemMaiuscula ? "validacao valido" : "validacao invalido"}>
-              Pelo menos 1 letra maiuscula
-            </p>
-            <p className={senhaTemNumero ? "validacao valido" : "validacao invalido"}>
-              Pelo menos 1 numero
-            </p>
-            <p className={senhaTemEspecial ? "validacao valido" : "validacao invalido"}>
-              Pelo menos 1 caractere especial: ! @ # $ % & * ?
-            </p>
-            {!senhaSemInvalidos && (
-              <p className="validacao invalido">
-                Caracteres invalidos digitados: {caracteresInvalidos.join(" ")}
-              </p>
-            )}
-          </div>
+          {mostrarValidacoesSenha && (
+            <div className="validacoes">
+              {!senhaTemTamanho && (
+                <p className="validacao invalido">Minimo de 8 caracteres</p>
+              )}
+              {!senhaTemMaiuscula && (
+                <p className="validacao invalido">
+                  Pelo menos 1 letra maiuscula
+                </p>
+              )}
+              {!senhaTemNumero && (
+                <p className="validacao invalido">Pelo menos 1 numero</p>
+              )}
+              {!senhaTemEspecial && (
+                <p className="validacao invalido">
+                  Pelo menos 1 caractere especial: ! @ # $ % & * ?
+                </p>
+              )}
+              {!senhaSemInvalidos && (
+                <p className="validacao invalido">
+                  Caracteres invalidos digitados: {caracteresInvalidos.join(" ")}
+                </p>
+              )}
+            </div>
+          )}
 
           <label>Nome</label>
           <input
@@ -201,11 +212,9 @@ function Cadastro() {
             onChange={(event) => setDataNascimento(event.target.value)}
             required
           />
-          {dataNascimento !== "" && (
-            <p className={dataValida ? "validacao valido" : "validacao invalido"}>
-              {dataValida
-                ? "Data valida."
-                : "A data deve estar entre hoje e 100 anos atras."}
+          {dataNascimento !== "" && !dataValida && (
+            <p className="validacao invalido">
+              A data deve estar entre hoje e 100 anos atras.
             </p>
           )}
 
