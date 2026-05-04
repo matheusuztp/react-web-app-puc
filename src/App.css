@@ -63,6 +63,11 @@ button:hover {
   background-color: #135ca4;
 }
 
+button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
 a {
   color: #1976d2;
 }
@@ -70,4 +75,29 @@ a {
 .erro {
   color: #b00020;
   font-weight: bold;
+}
+
+.validacoes {
+  margin-bottom: 8px;
+}
+
+.validacao {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.valido {
+  color: #087f23;
+}
+
+.valido::before {
+  content: "OK - ";
+}
+
+.invalido {
+  color: #b00020;
+}
+
+.invalido::before {
+  content: "Falta - ";
 }

@@ -4,6 +4,81 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
 
+function validarEmail(email) {
+  if (email === "" || email.includes(" ")) {
+    return false;
+  }
+
+  const partes = email.split("@");
+
+  if (partes.length !== 2) {
+    return false;
+  }
+
+  const parteLocal = partes[0];
+  const dominio = partes[1];
+  const caracteresLocal = /^[a-zA-Z0-9.!#$%&'*+\-/=?^_`{|}~]+$/;
+
+  if (parteLocal.length === 0 || parteLocal.length > 64) {
+    return false;
+  }
+
+  if (!caracteresLocal.test(parteLocal)) {
+    return false;
+  }
+
+  if (
+    parteLocal.startsWith(".") ||
+    parteLocal.endsWith(".") ||
+    parteLocal.includes("..")
+  ) {
+    return false;
+  }
+
+  if (dominio.length === 0 || dominio.length > 255 || !dominio.includes(".")) {
+    return false;
+  }
+
+  const partesDominio = dominio.split(".");
+  const tld = partesDominio[partesDominio.length - 1];
+
+  if (!/^[a-zA-Z]{2,}$/.test(tld)) {
+    return false;
+  }
+
+  for (const parte of partesDominio) {
+    if (parte.length === 0) {
+      return false;
+    }
+
+    if (!/^[a-zA-Z0-9-]+$/.test(parte)) {
+      return false;
+    }
+
+    if (parte.startsWith("-") || parte.endsWith("-")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function validarData(dataNascimento) {
+  if (dataNascimento === "") {
+    return false;
+  }
+
+  const data = new Date(dataNascimento + "T00:00:00");
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const dataMinima = new Date();
+  dataMinima.setFullYear(hoje.getFullYear() - 100);
+  dataMinima.setHours(0, 0, 0, 0);
+
+  return data >= dataMinima && data <= hoje;
+}
+
 function Cadastro() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -13,9 +88,31 @@ function Cadastro() {
   const [dataNascimento, setDataNascimento] = useState("");
   const [mensagem, setMensagem] = useState("");
 
+  const senhaTemTamanho = senha.length >= 8;
+  const senhaTemMaiuscula = /[A-Z]/.test(senha);
+  const senhaTemNumero = /[0-9]/.test(senha);
+  const senhaTemEspecial = /[!@#$%&*?]/.test(senha);
+  const caracteresInvalidos = senha.match(/['";\\/]/g) || [];
+  const senhaSemInvalidos = caracteresInvalidos.length === 0;
+  const senhaValida =
+    senhaTemTamanho &&
+    senhaTemMaiuscula &&
+    senhaTemNumero &&
+    senhaTemEspecial &&
+    senhaSemInvalidos;
+  const emailValido = validarEmail(email);
+  const dataValida = validarData(dataNascimento);
+  const formularioValido =
+    emailValido && senhaValida && dataValida && nome !== "" && sobrenome !== "";
+
   async function cadastrar(event) {
     event.preventDefault();
     setMensagem("");
+
+    if (!formularioValido) {
+      setMensagem("Preencha os campos corretamente antes de cadastrar.");
+      return;
+    }
 
     try {
       const resultado = await createUserWithEmailAndPassword(auth, email, senha);
@@ -48,6 +145,11 @@ function Cadastro() {
             onChange={(event) => setEmail(event.target.value)}
             required
           />
+          {email !== "" && (
+            <p className={emailValido ? "validacao valido" : "validacao invalido"}>
+              {emailValido ? "E-mail valido." : "Digite um e-mail valido."}
+            </p>
+          )}
 
           <label>Senha</label>
           <input
@@ -56,6 +158,28 @@ function Cadastro() {
             onChange={(event) => setSenha(event.target.value)}
             required
           />
+          <div className="validacoes">
+            <p className={senhaTemTamanho ? "validacao valido" : "validacao invalido"}>
+              Minimo de 8 caracteres
+            </p>
+            <p className={senhaTemMaiuscula ? "validacao valido" : "validacao invalido"}>
+              Pelo menos 1 letra maiuscula
+            </p>
+            <p className={senhaTemNumero ? "validacao valido" : "validacao invalido"}>
+              Pelo menos 1 numero
+            </p>
+            <p className={senhaTemEspecial ? "validacao valido" : "validacao invalido"}>
+              Pelo menos 1 caractere especial: ! @ # $ % & * ?
+            </p>
+            <p className={senhaSemInvalidos ? "validacao valido" : "validacao invalido"}>
+              Sem caracteres invalidos: ' " ; \ /
+            </p>
+            {!senhaSemInvalidos && (
+              <p className="validacao invalido">
+                Caracteres invalidos digitados: {caracteresInvalidos.join(" ")}
+              </p>
+            )}
+          </div>
 
           <label>Nome</label>
           <input
@@ -80,8 +204,17 @@ function Cadastro() {
             onChange={(event) => setDataNascimento(event.target.value)}
             required
           />
+          {dataNascimento !== "" && (
+            <p className={dataValida ? "validacao valido" : "validacao invalido"}>
+              {dataValida
+                ? "Data valida."
+                : "A data deve estar entre hoje e 100 anos atras."}
+            </p>
+          )}
 
-          <button type="submit">Cadastrar</button>
+          <button type="submit" disabled={!formularioValido}>
+            Cadastrar
+          </button>
         </form>
 
         {mensagem && <p className="erro">{mensagem}</p>}
