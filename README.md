@@ -47,5 +47,6 @@ No Firebase, e necessario habilitar:
 
 ## Deploy no Netlify
 
+```
 https://react-web-app-puc.netlify.app/
 ```
