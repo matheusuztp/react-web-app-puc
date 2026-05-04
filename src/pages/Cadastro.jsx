@@ -79,6 +79,18 @@ function validarData(dataNascimento) {
   return data >= dataMinima && data <= hoje;
 }
 
+function mensagemErroCadastro(erro) {
+  if (
+    erro.code === "auth/email-already-in-use" ||
+    erro.message === "EMAIL_EXISTS" ||
+    erro.message.includes("EMAIL_EXISTS")
+  ) {
+    return "Este e-mail ja esta cadastrado. Tente fazer login.";
+  }
+
+  return "Nao foi possivel cadastrar o usuario.";
+}
+
 function Cadastro() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -129,7 +141,7 @@ function Cadastro() {
 
       navigate("/principal");
     } catch (erro) {
-      setMensagem("Nao foi possivel cadastrar o usuario.");
+      setMensagem(mensagemErroCadastro(erro));
     }
   }
 
