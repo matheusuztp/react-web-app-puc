@@ -171,9 +171,6 @@ function Cadastro() {
             <p className={senhaTemEspecial ? "validacao valido" : "validacao invalido"}>
               Pelo menos 1 caractere especial: ! @ # $ % & * ?
             </p>
-            <p className={senhaSemInvalidos ? "validacao valido" : "validacao invalido"}>
-              Sem caracteres invalidos: ' " ; \ /
-            </p>
             {!senhaSemInvalidos && (
               <p className="validacao invalido">
                 Caracteres invalidos digitados: {caracteresInvalidos.join(" ")}

@@ -91,7 +91,7 @@ a {
 }
 
 .valido::before {
-  content: "OK - ";
+  content: "✓ ";
 }
 
 .invalido {
@@ -99,5 +99,5 @@ a {
 }
 
 .invalido::before {
-  content: "Falta - ";
+  content: "⚠ ";
 }
